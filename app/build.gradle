@@ -1,5 +1,7 @@
 apply plugin: 'com.android.application'
 
+def local_make = false
+
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
@@ -30,12 +32,16 @@ android {
     }
     sourceSets {
         main {
-            jniLibs.srcDirs = ['libs']
+            if(!local_make){
+                jniLibs.srcDirs = ['libs']
+            }
         }
     }
     externalNativeBuild {
-        cmake {
-            path "CMakeLists.txt"
+        if(local_make){
+            cmake {
+                path "CMakeLists.txt"
+            }
         }
     }
     compileOptions {

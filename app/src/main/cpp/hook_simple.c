@@ -9,6 +9,9 @@
 #define PAGE_START(addr) ((addr) & PAGE_MASK)
 #define PAGE_END(addr)   (PAGE_START(addr) + PAGE_SIZE)
 
+
+size_t (*old_fwrite)(const void *buf, size_t size, size_t count, FILE *fp);
+
 /**
  * hook导出表函数
  * @param buf
@@ -18,11 +21,11 @@
  * @return
  */
 size_t hook_fwrite(const void *buf, size_t size, size_t count, FILE *fp) {
-    LOG_D("hook fwrite success");
+    LOG_D("hook simple fwrite success");
     //这里插入一段文本
     const char *text = "hello ";
-    fwrite(text, strlen(text), 1, fp);
-    return fwrite(buf, size, count, fp);
+    old_fwrite(text, strlen(text), 1, fp);
+    return old_fwrite(buf, size, count, fp);
 }
 
 /**
@@ -58,11 +61,15 @@ void Java_com_feature_hook_NativeHook_hookSimple(JNIEnv *env, jobject obj, jstri
     LOG_D("base address=0x%08X", base_addr);
     if (0 == base_addr) return;
     //基址+偏移=真实的地址
-    addr = base_addr + 0x2FE0;
+    addr = base_addr + 0x3FD0;
     LOG_D("value=0x%08X address=0x%08X fwrite=0x%08X", addr, *(uintptr_t *) addr, fwrite);
     //调整写权限
     mprotect((void *) PAGE_START(addr), PAGE_SIZE, PROT_READ | PROT_WRITE);
-    //替换目标地址
+
+    //保存旧地址
+    old_fwrite = *(void **) addr;
+
+    //替换新的目标地址
     *(void **) addr = hook_fwrite;
     //清除指令缓存
     __builtin___clear_cache((void *) PAGE_START(addr), (void *) PAGE_END(addr));

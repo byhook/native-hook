@@ -17,13 +17,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="onWriteClick"
-        android:text="测试一下" />
+        android:text="写入操作" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="onHookClick"
-        android:text="测试一下" />
+        android:text="hook操作" />
 
 
 </LinearLayout>

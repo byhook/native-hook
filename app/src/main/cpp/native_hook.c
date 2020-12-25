@@ -35,8 +35,8 @@ size_t new_fwrite(const void *buf, size_t size, size_t count, FILE *fp) {
     //这里插入一段文本
     const char *text = "hello ";
     LOG_D("hook fwrite success insert text: %s", text);
-    fwrite(text, strlen(text), 1, fp);
-    return fwrite(buf, size, count, fp);
+    old_fwrite(text, strlen(text), 1, fp);
+    return old_fwrite(buf, size, count, fp);
 }
 
 void *get_module_base(pid_t pid, const char *module_name) {
